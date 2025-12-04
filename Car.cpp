@@ -1,6 +1,9 @@
 #include "Car.h"
 
-MecanumCar::MecanumCar() : frontLeft("front-left"), frontRight("front-right"), rearLeft("rear-left"), rearRight("rear-right"), camera(), x(0.0), y(0.0), headingDeg(0.0)
+MecanumCar::MecanumCar() : frontLeft("front-left", motPins[0], motPins[1], enPins[2]), 
+    frontRight("front-right", motPins[3], motPins[4], enPins[5]), rearLeft("rear-left", motPins[6], motPins[7], enPins[8]), 
+    rearRight("rear-right", motPins[9], motPins[10], enPins[11]), 
+    camera(), x(0.0), y(0.0), headingDeg(0.0)
 {
 }
 

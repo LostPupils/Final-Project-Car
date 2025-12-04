@@ -11,9 +11,8 @@ Will use pigpio.h to communicate with Raspberry-Pi pins. These pins will connect
 #include <string>
 #include <pigpio.h>
 #include <cmath>
-#include <map>
 
-const int motPins[] = {4, 5, 6, 7};
+const int motPins[] = {4, 5, 6, 7, 8, 9, 10};
 const int enPins[] = {8, 9};
 
 double speedMotor1 = 0, speedMotor2 = 0;
@@ -21,12 +20,12 @@ double speedMotor1 = 0, speedMotor2 = 0;
 class Motor {
 private:
     std::string name;
-    int speedPercent, pinNum1, pinNum2;
+    int speedPercent, pinNum1, pinNum2, EN;
     bool enabled;
 
 public:
     Motor();
-    Motor(const std::string& motorName, const int pin1, const int pin2);
+    Motor(const std::string& motorName, const int pin1, const int pin2, const int enPin);
 
     void setSpeed(int newSpeedPercent);
     int getSpeed() const;

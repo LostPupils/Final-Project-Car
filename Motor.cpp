@@ -34,9 +34,8 @@ void Motor::setSpeed(int newSpeedPercent){
         gpioWrite(pinNum1, 0);
         gpioWrite(pinNum2, 0);
     }
-
+    
     gpioPWM(EN, abs(speedPercent) * 255 / 100);
-
 }
 
 int Motor::getSpeed() const
