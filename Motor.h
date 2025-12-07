@@ -20,7 +20,7 @@ values depending on how the Raspberry Pi is connected.
 
 using namespace std;
 
-// Array of pins that are usable for the PI.
+// Array of pins that are usable in Pi.
 const int motPins[] = {4, 5, 6, 7, 8, 9, 10};
 const int enPins[] = {8, 9};
 
@@ -39,9 +39,7 @@ public:
     void setValues(string motorName, int pinIn1, int pinIn2, int enIn);
     void enable();
     void disable();
-    // bool isEnabled() const;
 
-    // std::string getName() const;
 };
 
 class PiCamera {

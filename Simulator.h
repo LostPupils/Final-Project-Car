@@ -3,6 +3,7 @@
 #include "Motor.h"
 
 
+
 class SimulateCar{
 private:
     float x;
@@ -12,6 +13,7 @@ private:
 
 public:
     SimulateCar();
+
 
     void drawMap();
     char headingSymbol(float dirDegFromNorth);

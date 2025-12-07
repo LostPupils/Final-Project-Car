@@ -96,12 +96,12 @@ void Car::stop() {
     rearRight.disable();
 }
 
-// void Car::cameraOn()
+// void MecanumCar::cameraOn()
 // {
 //     camera.startStream();
 // }
 
-// void Car::cameraOff()
+// void MecanumCar::cameraOff()
 // {
 //     camera.stopStream();
 // }

@@ -83,10 +83,11 @@ void SimulateCar::drawMap()
     }
     cout << '\n';
 
+    // Grid rows
     for (int j = 0; j < MAP_HEIGHT; ++j) {
         cout << setw(3) << j << "|";
         for (int i = 0; i < MAP_WIDTH; ++i) {
-            char cell = '.';
+            char cell = '.';  // default empty cell
             if (i == xVal && j == yVal) {
                 cell = objSymbol;
             }
@@ -110,6 +111,10 @@ void SimulateCar::drawMap()
 }
 
 
+/*
+updateVal is a function that will be used by the simulator. Whenever the car is moved,
+this function will update the map values (found on simulator). 
+*/
 void SimulateCar::updateVal(float xMove, float yMove, float dirMove)
 {
     dir += dirMove;
