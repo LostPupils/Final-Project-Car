@@ -12,48 +12,31 @@ and the Car files will give the Motor files instructions.
 */
 
 
-#include "Motor.h"
+#include "Simulator.h"
 
-class MecanumCar {
+
+class Car {
 private:
     Motor frontLeft;
     Motor frontRight;
     Motor rearLeft;
     Motor rearRight;
-//   PiCamera camera;
-
-    double x;
-    double y;
-    double headingDeg;
-    
-    void updatePose(double dx, double dy, double dThetaDeg);
+    SimulateCar simulation;
+    // PiCamera camera;
 
 public:
-    MecanumCar();
+    Car();
+    SimulateCar* getSim(void);
+    void moveForward(int speed);
+    void moveBackward(int speed);
+    void turnLeft();
+    void turnRight();
+    void diagonalUpLeft(int speed);
+    void diagonalUpRight(int speed);
+    void diagonalDownLeft(int speed);
+    void diagonalDownRight(int speed);
+    void stop();
+    // void cameraOn();
+    // void cameraOff();
 
-    void moveForward(double distance);
-    void moveBackward(double distance);
-    void strafeLeft(double distance);
-    void strafeRight(double distance);
-    void rotateLeft(double angleDeg);
-    void rotateRight(double angleDeg);
-
-    void stopAllMotors();
-
-    void cameraOn();
-    void cameraOff();
-
-    double getX() const;
-    double getY() const;
-    double getHeadingDeg() const;
-
-    Motor getFrontLeftMotor() const;
-    Motor getFrontRightMotor() const;
-    Motor getRearLeftMotor() const;
-    Motor getRearRightMotor() const;
-
-    void applyCommand(MovementCommand cmd, double value);
-    CarSnapshot getSnapshot() const;
 };
-
-void updatePose

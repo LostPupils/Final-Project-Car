@@ -1,183 +1,114 @@
 #include "Car.h"
 
-MecanumCar::MecanumCar() : frontLeft("front-left", motPins[0], motPins[1], enPins[2]), 
-    frontRight("front-right", motPins[3], motPins[4], enPins[5]), rearLeft("rear-left", motPins[6], motPins[7], enPins[8]), 
-    rearRight("rear-right", motPins[9], motPins[10], enPins[11]), 
-    camera(), x(0.0), y(0.0), headingDeg(0.0)
+Car::Car()
+    // camera(), x(0.0), y(0.0), headingDeg(0.0)
 {
+    frontLeft.setValues("front-left", motPins[0], motPins[1], enPins[2]);
+    frontRight.setValues("front-right", motPins[3], motPins[4], enPins[5]);
+    rearLeft.setValues("rear-left", motPins[6], motPins[7], enPins[8]); 
+    rearRight.setValues("rear-right", motPins[9], motPins[10], enPins[11]); 
 }
 
-
-void MecanumCar::updatePose(double dx, double dy, double dThetaDeg)
-{
-    x += dx;
-    y += dy;
-    headingDeg += dThetaDeg;
-
-    while(headingDeg >= 360.0) headingDeg -= 360;
-    while(headingDeg < 0.0) headingDeg += 360;
+void Car::moveForward(int speed) {
+    frontLeft.setSpeed(speed);
+    frontRight.setSpeed(speed);
+    rearLeft.setSpeed(speed);
+    rearRight.setSpeed(speed);
+    frontLeft.enable();
+    frontRight.enable();
+    rearLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::moveForward(double distance)
-{
-    updatePose(0, distance, 0);
-    rearLeft.setSpeed(50);
-    rearRight.setSpeed(50);
-    frontLeft.setSpeed(50);
-    frontRight.setSpeed(50);
+void Car::moveBackward(int speed) {
+    frontLeft.setSpeed(-speed);
+    frontRight.setSpeed(-speed);
+    rearLeft.setSpeed(-speed);
+    rearRight.setSpeed(-speed);
+
+    frontLeft.enable();
+    frontRight.enable();
+    rearLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::moveBackward(double distance)
-{
-    updatePose(0, -distance, 0);
-    rearLeft.setSpeed(-50);
-    rearRight.setSpeed(-50);
-    frontLeft.setSpeed(-50);
-    frontRight.setSpeed(-50);
+void Car::turnLeft() {
+    frontLeft.setSpeed(-5);
+    frontRight.setSpeed(5);
+    rearLeft.setSpeed(-5);
+    rearRight.setSpeed(5);
+
+    frontLeft.enable();
+    frontRight.enable();
+    rearLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::strafeLeft(double distance)
-{
-    updatePose(-distance, 0, 0);
-    rearLeft.setSpeed(50);
-    rearRight.setSpeed(-50);
-    frontLeft.setSpeed(-50);
-    frontRight.setSpeed(50);
+void Car::turnRight() {
+    frontLeft.setSpeed(5);
+    frontRight.setSpeed(-5);
+    rearLeft.setSpeed(5);
+    rearRight.setSpeed(-5);
+
+
+    frontLeft.enable();
+    frontRight.enable();
+    rearLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::strafeRight(double distance)
-{
-    updatePose(distance, 0, 0);
-    rearLeft.setSpeed(-50);
-    rearRight.setSpeed(50);
-    frontLeft.setSpeed(50);
-    frontRight.setSpeed(-50);
+void Car::diagonalUpLeft(int speed) {
+    frontRight.setSpeed(speed);
+    rearLeft.setSpeed(speed);
+
+    frontRight.enable();
+    rearLeft.enable();
 }
 
-void MecanumCar::rotateLeft(double angleDeg)
-{
-    updatePose(0, 0, angleDeg);
+void Car::diagonalUpRight(int speed) {
+    frontLeft.setSpeed(speed);
+    rearRight.setSpeed(speed);
+
+    frontLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::rotateRight(double angleDeg)
-{
-    updatePose(0, 0, -angleDeg);
+void Car::diagonalDownLeft(int speed) {
+    frontLeft.setSpeed(-speed);
+    rearRight.setSpeed(-speed);
+
+    frontLeft.enable();
+    rearRight.enable();
 }
 
-void MecanumCar::stopAllMotors()
-{
-    rearLeft.setSpeed(0);
-    rearRight.setSpeed(0);
-    frontLeft.setSpeed(0);
-    frontRight.setSpeed(0);
-    frontLeft.disable();
+void Car::diagonalDownRight(int speed) {
+    frontRight.setSpeed(-speed);
+    rearLeft.setSpeed(-speed);
 
-    rearLeft.disable();
-    rearRight.disable();
+    frontRight.enable();
+    rearLeft.enable();
+}
+
+void Car::stop() {
     frontLeft.disable();
     frontRight.disable();
+    rearLeft.disable();
+    rearRight.disable();
 }
 
-void MecanumCar::cameraOn()
-{
-    camera.startStream();
-}
+// void Car::cameraOn()
+// {
+//     camera.startStream();
+// }
 
-void MecanumCar::cameraOff()
-{
-    camera.stopStream();
-}
+// void Car::cameraOff()
+// {
+//     camera.stopStream();
+// }
 
-double MecanumCar::getX() const
-{
-    return x;
-}
 
-double MecanumCar::getY() const
-{
-    return y;
-}
-
-double MecanumCar::getHeadingDeg() const
-{
-    return headingDeg;
-}
-
-Motor MecanumCar::getFrontLeftMotor() const
-{
-    return frontLeft;
-}
-
-Motor MecanumCar::getFrontRightMotor() const
-{
-    return frontRight;
-}
-
-Motor MecanumCar::getRearLeftMotor() const
-{
-    return rearLeft;
-}
-
-Motor MecanumCar::getRearRightMotor() const
-{
-    return rearRight;
-}
-
-CarSnapshot MecanumCar::getSnapshot() const
-{
-    CarSnapshot snap;
-    
-    snap.x = getX();
-    snap.y = getY();
-    snap.headingDeg = getHeadingDeg();
-
-    //snap.cameraStreaming = camera.isStreaming();
-    
-    snap.frontLeft.name = frontLeft.getName();
-    snap.frontLeft.speedPercent = frontLeft.getSpeed();
-    snap.frontLeft.enabled = frontLeft.isEnabled();
-
-    snap.frontRight.name = frontRight.getName();
-    snap.frontRight.speedPercent = frontRight.getSpeed();
-    snap.frontRight.enabled = frontRight.isEnabled();
-
-    snap.backLeft.name = backLeft.getName();
-    snap.backLeft.speedPercent = backLeft.getSpeed();
-    snap.backLeft.enabled = backLeft.isEnabled();
-
-    snap.backRight.name = backRight.getName();
-    snap.backRight.speedPercent = backRight.getSpeed();
-    snap.backRight.enabled = backRight.isEnabled();
-
-    return snap;
+SimulateCar* Car::getSim(void){
+    return &simulation;
 }
 
 
-void MecanumCar::applyCommand(MovementCommand cmd, double value)
-{
-
-    switch(cmd){
-        case MovementCommand::MoveForward:
-            moveForward(value);
-            break;
-        case MovementCommand::MoveBackward:
-            moveBackward(value);
-            break;
-        case MovementCommand::StrafeLeft:
-            strafeLeft(value);
-            break;
-        case MovementCommand::StrafeRight:
-            strafeRight(value);
-            break;
-        case MovementCommand::RotateLeft:
-            rotateLeft(value);
-            break;
-        case MovementCommand::RotateRight:
-            rotateRight(value);
-            break;
-        case MovementCommand::Stop:
-            stopAllMotors();
-            break;
-    }
-
-}

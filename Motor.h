@@ -2,20 +2,27 @@
 This will be where the actual software to hardware communication happens.
 Will use pigpio.h to communicate with Raspberry-Pi pins. These pins will connect to L298N motor driver.
 
+If connecting with Raspberry-Pi, uncomment the pigpio libary and its functions. You may need to change pin
+values depending on how the Raspberry Pi is connected. 
+
 */
 
 #ifndef CAR_MODEL_H
 #define CAR_MODEL_H
-
-#include <iostream.
+#include <iostream>
+#include <iomanip>
+#include <thread>
+#include <chrono>
+#include <cmath>
 #include <string>
-#include <pigpio.h>
+// #include <pigpio.h>
 #include <cmath>
 
+using namespace std;
+
+// Array of pins that are usable for the PI.
 const int motPins[] = {4, 5, 6, 7, 8, 9, 10};
 const int enPins[] = {8, 9};
-
-double speedMotor1 = 0, speedMotor2 = 0;
 
 class Motor {
 private:
@@ -29,50 +36,26 @@ public:
 
     void setSpeed(int newSpeedPercent);
     int getSpeed() const;
-
+    void setValues(string motorName, int pinIn1, int pinIn2, int enIn);
     void enable();
     void disable();
-    bool isEnabled() const;
+    // bool isEnabled() const;
 
-    std::string getName() const;
+    // std::string getName() const;
 };
 
-// class PiCamera {
-// private:
-//     bool streaming;
+class PiCamera {
+private:
+    bool streaming;
 
-// public:
-//     PiCamera();
+public:
+    PiCamera();
 
-//     void startStream();
-//     void stopStream();
-//     bool isStreaming() const;
-// };
-
-enum class MovementCommand {
-    MoveForward,
-    MoveBackward,
-    StrafeLeft,
-    StrafeRight,
-    RotateLeft,
-    RotateRight,
-    Stop
+    void startStream();
+    void stopStream();
+    bool isStreaming() const;
 };
 
-struct MotorSnapshot {
-    std::string name;
-    int speedPercent;
-    bool enabled;
-};
 
-struct CarSnapshot {
-    double x;
-    double y;
-    double headingDeg;
-    bool cameraStreaming;
 
-    MotorSnapshot frontLeft;
-    MotorSnapshot frontRight;
-    MotorSnapshot rearLeft;
-    MotorSnapshot rearRight;
-};
+#endif

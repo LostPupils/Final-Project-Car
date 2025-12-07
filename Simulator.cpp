@@ -7,56 +7,122 @@ Should tell the car how fast it should go, what direction to go, and where to tu
 
 #include "Simulator.h"
 
-// void worldToMap(double x, double y, int& outRow, int& outCol)
-// {
-//     int centerRow = MAP_HEIGHT / 2;
-//     int centerCol = MAP_WIDTH / 2;
-
-//     outRow = centerRow - static_cast<int>(std::round(y));
-//     outCol = centerCol + static_cast<int>(std::round(x));
-// }
+static const int MAP_WIDTH  = 20;
+static const int MAP_HEIGHT = 20;
 
 
-void runDemoPath(MecanumCar& car)
+SimulateCar::SimulateCar() : x(0), y(0), dir(0)
 {
-    using namespace std::chrono_literals;
+}
 
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+char SimulateCar::headingSymbol(float dirDegFromNorth)
+{
+    // Normalize to [0, 360)
+    while (dirDegFromNorth < 0.0f)       dirDegFromNorth += 360.0f;
+    while (dirDegFromNorth >= 360.0f)    dirDegFromNorth -= 360.0f;
 
-    car.moveForward(3.0);
+    // 0°   = North
+    // 90°  = East
+    // 180° = South
+    // 270° = West
+    if (dirDegFromNorth >= 315.0f || dirDegFromNorth < 45.0f)
+        return '^';   // facing roughly North
+    else if (dirDegFromNorth >= 45.0f && dirDegFromNorth < 135.0f)
+        return '>';   // facing roughly East
+    else if (dirDegFromNorth >= 135.0f && dirDegFromNorth < 225.0f)
+        return 'v';   // facing roughly South
+    else
+        return '<';   // facing roughly West
+}
 
-    cout << "Moving Forward at speed of 3.0" << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+void SimulateCar::drawMap()
+{
+    // Round to nearest tile. Since movement is on a grid, coordinates need to be int values. 
+    int xVal = static_cast<int>(round(x)) + MAP_WIDTH / 2;
+    int yVal = static_cast<int>(round(y)) + MAP_HEIGHT / 2;
+    float dirVal = dir;
 
-    car.strafeRight(4.0);
-    cout << "Strafing Right at speeed of 4.0" << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    // Bounds check for car on map. If car moves out of map range, it will let the user know.
+    if (xVal < 0 || xVal >= MAP_WIDTH || yVal < 0 || yVal >= MAP_HEIGHT) {
+        cerr << "\nError: object position out of bounds\n";
+        return;
+    }
 
-    car.rotateLeft(90.0);
-    cout << "Rotating Left 90 degrees." << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    // Determine object heading symbol. Either >, <, ^, or v.
+    char objSymbol = headingSymbol(dirVal);
 
-    car.moveBackward(2.0);
-    cout << "Moving Backwards at speed of 2." << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    int northX = xVal;
+    int northY = yVal - 1;
 
-    car.strafeLeft(3.0);
-    cout << "Strafing Left at speeed of 3.0" << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    int southX = xVal;
+    int southY = yVal + 1;
 
-    car.rotateRight(45.0);
-    cout << "Rotating Left 45 degrees." << endl;
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    int eastX  = xVal + 1;
+    int eastY  = yVal;
 
-    car.stopAllMotors();
-    cout << "Stopping all motors."
-    // drawMap(car);
-    std::this_thread::sleep_for(800ms);
+    int westX  = xVal - 1;
+    int westY  = yVal;
+
+    bool hasNorth = (northY >= 0);
+    bool hasSouth = (southY < MAP_HEIGHT);
+    bool hasEast  = (eastX  < MAP_WIDTH);
+    bool hasWest  = (westX  >= 0);
+
+
+
+    // Below will create the grid. 
+    cout << "    ";
+    for (int i = 0; i < MAP_WIDTH; ++i) {
+        cout << setw(3) << i;
+    }
+    cout << '\n';
+
+    cout << "    ";
+    for (int i = 0; i < MAP_WIDTH; ++i) {
+        cout << setw(3) << '-';
+    }
+    cout << '\n';
+
+    for (int j = 0; j < MAP_HEIGHT; ++j) {
+        cout << setw(3) << j << "|";
+        for (int i = 0; i < MAP_WIDTH; ++i) {
+            char cell = '.';
+            if (i == xVal && j == yVal) {
+                cell = objSymbol;
+            }
+            else if (hasNorth && i == northX && j == northY) {
+                cell = 'N';
+            }
+            else if (hasSouth && i == southX && j == southY) {
+                cell = 'S';
+            }
+            else if (hasEast && i == eastX && j == eastY) {
+                cell = 'E';
+            }
+            else if (hasWest && i == westX && j == westY) {
+                cell = 'W';
+            }
+
+            cout << setw(3) << cell;
+        }
+        cout << '\n';
+    }
+}
+
+
+void SimulateCar::updateVal(float xMove, float yMove, float dirMove)
+{
+    dir += dirMove;
+
+    constexpr float DEG2RAD = 3.14159265358979f / 180.0f;
+    float theta = dir * DEG2RAD;
+
+    float cosT = cos(theta);
+    float sinT = sin(theta);
+
+    float dxMap = xMove * cosT - yMove * sinT;
+    float dyMap = xMove * sinT + yMove * cosT;
+
+    x += dxMap;
+    y += dyMap;
 }
